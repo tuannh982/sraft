@@ -24,7 +24,7 @@ public class FSM {
     public void transition(FsmEntity entity, Event event) {
         State newState = transitionTable.get(TupleFactory.of(entity.state(), event));
         if (newState == null) {
-            throw new IllegalStateException();
+            return; // state remain unchanged
         }
         TransitionEntry entry = executors.get(TupleFactory.of(entity.state(), event, newState));
         entity.changeState(newState);
