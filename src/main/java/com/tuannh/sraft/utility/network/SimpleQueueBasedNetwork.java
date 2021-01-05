@@ -1,6 +1,7 @@
-package com.tuannh.sraft.network;
+package com.tuannh.sraft.utility.network;
 
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.Serializable;
 import java.util.*;
@@ -8,12 +9,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class SimpleQueueBasedNetwork<I extends Serializable> implements Network<I> {
+@Log4j2
+public final class SimpleQueueBasedNetwork<I extends Serializable> implements Network<I> {
     private final Map<I, BlockingQueue<Packet<I, ?>>> queue = new HashMap<>();
     private final Set<I> clients = new HashSet<>();
 
     @Override
     public void register(I id) {
+        log.debug("{} joined", id);
         if (!queue.containsKey(id)) {
             queue.put(id, new LinkedBlockingQueue<>());
             clients.add(id);
@@ -22,12 +25,14 @@ public class SimpleQueueBasedNetwork<I extends Serializable> implements Network<
 
     @Override
     public void deregister(I id) {
+        log.debug("{} left", id);
         queue.remove(id);
         clients.remove(id);
     }
 
     @Override
     public <T extends Serializable> void broadcast(@NonNull I from, T message) {
+        log.debug("{} broadcast message {} to network", from, message);
         for (I to : clients) {
             if (!Objects.equals(to, from)) {
                 queue.get(to).add(new Packet<>(from, to, message));
@@ -43,6 +48,7 @@ public class SimpleQueueBasedNetwork<I extends Serializable> implements Network<
         if (!queue.containsKey(to)) {
             return;
         }
+        log.debug("{} send message {} to {}", from, message, to);
         queue.get(to).add(new Packet<>(from, to, message));
     }
 
@@ -53,6 +59,7 @@ public class SimpleQueueBasedNetwork<I extends Serializable> implements Network<
             return null;
         }
         Packet<I, ?> packet = queue.get(id).poll(timeout, unit);
+        log.debug("{} receive packet {}", id, packet);
         if (packet == null) return null;
         try {
             return (T) packet.getPayload();

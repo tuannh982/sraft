@@ -1,4 +1,4 @@
-package com.tuannh.sraft.network;
+package com.tuannh.sraft.utility.network;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;

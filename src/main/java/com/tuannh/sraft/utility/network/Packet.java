@@ -1,10 +1,12 @@
-package com.tuannh.sraft.network;
+package com.tuannh.sraft.utility.network;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
+@ToString
 @Getter
 @AllArgsConstructor
 public final class Packet<I extends Serializable, T> {

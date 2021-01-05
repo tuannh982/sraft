@@ -1,4 +1,4 @@
-package com.tuannh.sraft.network;
+package com.tuannh.sraft.utility.network;
 
 import org.junit.Test;
 
