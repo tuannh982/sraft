@@ -36,19 +36,19 @@ public class FsmTest {
         Event process = Event.of("process");
         Event done = Event.of("done");
         // entries
-        TransitionEntry new2processing = new TransitionEntry(
+        TransitionEntry<Order> new2processing = new TransitionEntry<>(
                 newOrder,
                 process,
                 processingOrder,
                 entity -> System.out.println(entity + " new2processing called")
         );
-        TransitionEntry processing2done = new TransitionEntry(
+        TransitionEntry<Order> processing2done = new TransitionEntry<>(
                 processingOrder,
                 done,
                 doneOrder,
                 entity -> System.out.println(entity + " processing2done called")
         );
-        FSM fsm = new FSM(
+        FSM<Order> fsm = new FSM<>(
                 Arrays.asList(new2processing, processing2done)
         );
         Order x = new Order("order1", newOrder);

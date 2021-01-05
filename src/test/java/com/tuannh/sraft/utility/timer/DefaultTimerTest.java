@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class DefaultTimerTest {
 
+    @SuppressWarnings("java:S2925")
     @Test
     public void simpleTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(0);

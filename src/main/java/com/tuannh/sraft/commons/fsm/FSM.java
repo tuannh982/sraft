@@ -8,25 +8,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FSM {
+public class FSM<T extends FsmEntity> {
     private final Map<Tuple2<State, Event>, State> transitionTable;
-    private final Map<Tuple3<State, Event, State>, TransitionEntry> executors;
+    private final Map<Tuple3<State, Event, State>, TransitionEntry<T>> executors;
 
-    public FSM(List<TransitionEntry> entries) {
+    public FSM(List<TransitionEntry<T>> entries) {
         transitionTable = new HashMap<>();
         executors = new HashMap<>();
-        for (TransitionEntry entry : entries) {
+        for (TransitionEntry<T> entry : entries) {
             transitionTable.put(TupleFactory.of(entry.getBefore(), entry.getEvent()), entry.getAfter());
             executors.put(TupleFactory.of(entry.getBefore(), entry.getEvent(), entry.getAfter()), entry);
         }
     }
 
-    public void transition(FsmEntity entity, Event event) {
+    public final void transition(T entity, Event event) {
         State newState = transitionTable.get(TupleFactory.of(entity.state(), event));
         if (newState == null) {
             return; // state remain unchanged
         }
-        TransitionEntry entry = executors.get(TupleFactory.of(entity.state(), event, newState));
+        TransitionEntry<T> entry = executors.get(TupleFactory.of(entity.state(), event, newState));
         entity.changeState(newState);
         entry.handle(entity);
     }
