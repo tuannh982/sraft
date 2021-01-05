@@ -15,9 +15,7 @@ public final class TransitionEntry<T extends FsmEntity> {
         this.before = before;
         this.event = event;
         this.after = after;
-        this.handler = entity -> {
-            // NOOP
-        };
+        this.handler = entity -> entity.changeState(after);
     }
 
     public interface Handler<E extends FsmEntity> {

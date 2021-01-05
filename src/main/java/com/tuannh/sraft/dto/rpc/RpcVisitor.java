@@ -6,20 +6,24 @@ import com.tuannh.sraft.commons.visitor.Visitor;
 public interface RpcVisitor extends Visitor<BaseRpc, Void> {
     @Override
     default Void visit(BaseRpc o) {
+        preHandle(o);
         if (o instanceof AppendEntries) {
-            return visit((AppendEntries)o);
+            handle((AppendEntries)o);
         } else if (o instanceof AppendEntriesResponse) {
-            return visit((AppendEntriesResponse)o);
+            handle((AppendEntriesResponse)o);
         } else if (o instanceof RequestVote) {
-            return visit((RequestVote)o);
+            handle((RequestVote)o);
         } else if (o instanceof RequestVoteResponse) {
-            return visit((RequestVoteResponse)o);
+            handle((RequestVoteResponse)o);
         }
+        postHandle(o);
         return null;
     }
 
-    Void visit(AppendEntries message);
-    Void visit(AppendEntriesResponse message);
-    Void visit(RequestVote message);
-    Void visit(RequestVoteResponse message);
+    default void preHandle(BaseRpc o) {}
+    default void postHandle(BaseRpc o) {}
+    void handle(AppendEntries message);
+    void handle(AppendEntriesResponse message);
+    void handle(RequestVote message);
+    void handle(RequestVoteResponse message);
 }

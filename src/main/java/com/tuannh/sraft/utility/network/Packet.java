@@ -9,7 +9,7 @@ import java.io.Serializable;
 @ToString
 @Getter
 @AllArgsConstructor
-public final class Packet<I extends Serializable, T> {
+public final class Packet<I, T> {
     private final I sender;
     private final I receiver;
     private final T payload;

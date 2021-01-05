@@ -10,7 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 @Log4j2
-public final class SimpleQueueBasedNetwork<I extends Serializable> implements Network<I> {
+public final class SimpleQueueBasedNetwork<I> implements Network<I> {
     private final Map<I, BlockingQueue<Packet<I, ?>>> queue = new HashMap<>();
     private final Set<I> clients = new HashSet<>();
 
@@ -31,7 +31,7 @@ public final class SimpleQueueBasedNetwork<I extends Serializable> implements Ne
     }
 
     @Override
-    public <T extends Serializable> void broadcast(@NonNull I from, T message) {
+    public <T> void broadcast(@NonNull I from, T message) {
         log.debug("{} broadcast message {} to network", from, message);
         for (I to : clients) {
             if (!Objects.equals(to, from)) {
@@ -41,7 +41,7 @@ public final class SimpleQueueBasedNetwork<I extends Serializable> implements Ne
     }
 
     @Override
-    public <T extends Serializable> void sendMsg(@NonNull I from, @NonNull I to, T message) {
+    public <T> void sendMsg(@NonNull I from, @NonNull I to, T message) {
         if (Objects.equals(from, to)) {
             return;
         }
@@ -54,7 +54,7 @@ public final class SimpleQueueBasedNetwork<I extends Serializable> implements Ne
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Serializable> T pollMsg(I id, long timeout, TimeUnit unit) throws InterruptedException {
+    public <T> T pollMsg(I id, long timeout, TimeUnit unit) throws InterruptedException {
         if (!queue.containsKey(id)) {
             return null;
         }

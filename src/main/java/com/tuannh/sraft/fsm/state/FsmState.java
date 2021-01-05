@@ -4,6 +4,10 @@ import com.tuannh.sraft.commons.fsm.State;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 public enum FsmState {
@@ -12,4 +16,19 @@ public enum FsmState {
     FOLLOWER(State.of("follower"));
 
     private final State value;
+
+    private static final Map<State, FsmState> mx;
+    static {
+        Map<State, FsmState> mxx = new HashMap<>();
+        for (FsmState s : FsmState.values()) {
+            mxx.put(s.getValue(), s);
+        }
+        mx = Collections.unmodifiableMap(mxx);
+    }
+
+    public static FsmState from(State s) {
+        FsmState ret = mx.get(s);
+        if (ret == null) throw new IllegalStateException("state not defined");
+        return ret;
+    }
 }
