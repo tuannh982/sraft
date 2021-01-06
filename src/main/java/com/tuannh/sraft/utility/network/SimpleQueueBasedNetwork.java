@@ -59,8 +59,8 @@ public final class SimpleQueueBasedNetwork<I> implements Network<I> {
             return null;
         }
         Packet<I, ?> packet = queue.get(id).poll(timeout, unit);
-        log.debug("{} receive packet {}", id, packet);
         if (packet == null) return null;
+        log.debug("{} receive packet {}", id, packet);
         try {
             return (T) packet.getPayload();
         } catch (ClassCastException e) {

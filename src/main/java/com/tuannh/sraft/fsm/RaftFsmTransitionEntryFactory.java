@@ -9,10 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RaftFsmTransitionEntryFactory {
     public static TransitionEntry<RaftFsm> create(FsmState oldState, FsmEvent event, FsmState newState, TransitionEntry.Handler<RaftFsm> handler) {
-        if (handler == null) {
-            return new TransitionEntry<>(oldState.getValue(), event.getValue(), newState.getValue());
-        } else {
-            return new TransitionEntry<>(oldState.getValue(), event.getValue(), newState.getValue(), handler);
-        }
+        return new TransitionEntry<>(oldState.getValue(), event.getValue(), newState.getValue(), handler);
     }
 }

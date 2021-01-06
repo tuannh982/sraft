@@ -1,7 +1,9 @@
 package com.tuannh.sraft.dto.rpc;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString(callSuper = true)
 @Getter
 public class RequestVoteResponse extends BaseRpc {
     private final boolean voteGranted;

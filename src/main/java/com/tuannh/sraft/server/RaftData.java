@@ -1,16 +1,20 @@
 package com.tuannh.sraft.server;
 
+import com.tuannh.sraft.log.RaftLog;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicLong;
 
+@ToString
 @Getter
 @Setter
 public final class RaftData {
     // Persistent state on all servers
     private AtomicLong currentTerm;
-    private Object[] logs; // FIXME
+    private LinkedList<RaftLog> logs;
     // Volatile state on all servers
     private AtomicLong commitIndex;
     private AtomicLong lastApplied;
@@ -20,7 +24,7 @@ public final class RaftData {
 
     public RaftData() {
         currentTerm = new AtomicLong(0);
-        logs = new Object[0];
+        logs = new LinkedList<>();
         commitIndex = new AtomicLong(0);
         lastApplied = new AtomicLong(0);
         lastLogIndex = new AtomicLong(0);

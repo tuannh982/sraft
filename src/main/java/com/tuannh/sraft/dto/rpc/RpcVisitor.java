@@ -3,27 +3,31 @@ package com.tuannh.sraft.dto.rpc;
 import com.tuannh.sraft.commons.visitor.Visitor;
 
 @SuppressWarnings("java:S1905")
-public interface RpcVisitor extends Visitor<BaseRpc, Void> {
+public interface RpcVisitor extends Visitor<BaseRpc, Boolean> {
     @Override
-    default Void visit(BaseRpc o) {
-        preHandle(o);
+    default Boolean visit(BaseRpc o) {
+        boolean b = preHandle(o);
+        if (!b) return false;
         if (o instanceof AppendEntries) {
-            handle((AppendEntries)o);
+            b = handle((AppendEntries)o);
         } else if (o instanceof AppendEntriesResponse) {
-            handle((AppendEntriesResponse)o);
+            b = handle((AppendEntriesResponse)o);
         } else if (o instanceof RequestVote) {
-            handle((RequestVote)o);
+            b = handle((RequestVote)o);
         } else if (o instanceof RequestVoteResponse) {
-            handle((RequestVoteResponse)o);
+            b = handle((RequestVoteResponse)o);
         }
+        if (!b) return false;
         postHandle(o);
-        return null;
+        return true;
     }
 
-    default void preHandle(BaseRpc o) {}
+    default boolean preHandle(BaseRpc o) {
+        return true;
+    }
     default void postHandle(BaseRpc o) {}
-    void handle(AppendEntries message);
-    void handle(AppendEntriesResponse message);
-    void handle(RequestVote message);
-    void handle(RequestVoteResponse message);
+    boolean handle(AppendEntries message);
+    boolean handle(AppendEntriesResponse message);
+    boolean handle(RequestVote message);
+    boolean handle(RequestVoteResponse message);
 }

@@ -25,4 +25,12 @@ public class DefaultTimerTest {
         Thread.sleep(1005); // add 5ms
         assertEquals(18, i.get());
     }
+
+    @SuppressWarnings("java:S2925")
+    @Test
+    public void simpleTest2() throws InterruptedException {
+        Timer timer = DefaultTimer.create("timer", 500, Collections.singletonList(event -> System.out.println("A")));
+        Timer timer1 = DefaultTimer.create("timer1", 200, Collections.singletonList(event -> System.out.println("B")));
+        Thread.sleep(4005); // add 5ms
+    }
 }

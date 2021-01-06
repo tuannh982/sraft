@@ -72,6 +72,7 @@ public final class DefaultTimer implements Timer, Notifier<Long>, Runnable {
             if (stop) {
                 break;
             }
+            if (reset) continue;
             notifyTimeout();
         }
     }

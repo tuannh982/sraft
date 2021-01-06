@@ -5,7 +5,9 @@ import com.tuannh.sraft.dto.rpc.RequestVoteResponse;
 import com.tuannh.sraft.fsm.RaftFsm;
 import com.tuannh.sraft.server.RaftData;
 import com.tuannh.sraft.server.RaftServer;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class Voter extends ServerState {
     protected String votedFor = null;
 
@@ -14,7 +16,8 @@ public abstract class Voter extends ServerState {
     }
 
     @Override
-    public void handle(RequestVote message) {
+    public synchronized boolean handle(RequestVote message) {
+        log.info("{} | server received vote request {}", server.getId() + state, message);
         String serverId = server.getId();
         if (votedFor == null && message.getLastLogIndex() >= data.getLastLogIndex().get()) {
             votedFor = message.getCandidateId();
@@ -30,5 +33,6 @@ public abstract class Voter extends ServerState {
                     false
             ));
         }
+        return true;
     }
 }
