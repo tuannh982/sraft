@@ -45,7 +45,7 @@ public class Leader extends ServerState {
                 new RaftLog[0],
                 data.getCommitIndex().get()
         );
-        for (String neighbor : fsm.getServer().getQuorum()) {
+        for (String neighbor : fsm.getServer().getNeighbors()) {
             fsm.getServer().getNetwork().sendMsg(serverId, neighbor, heartbeat);
         }
     }
