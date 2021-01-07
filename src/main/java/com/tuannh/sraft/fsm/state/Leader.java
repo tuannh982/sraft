@@ -36,7 +36,7 @@ public class Leader extends ServerState {
 
     private synchronized void sendHeartBeat(String serverId) {
         log.info("{} | server send heartbeat", server.getId() + state);
-        server.getNetwork().broadcast(serverId, new AppendEntries(
+        AppendEntries heartbeat = new AppendEntries(
                 serverId,
                 data.getCurrentTerm().get(),
                 serverId,
@@ -44,7 +44,10 @@ public class Leader extends ServerState {
                 data.getLastLogTerm().get(),
                 new RaftLog[0],
                 data.getCommitIndex().get()
-        ));
+        );
+        for (String neighbor : fsm.getServer().getQuorum()) {
+            fsm.getServer().getNetwork().sendMsg(serverId, neighbor, heartbeat);
+        }
     }
 
     @Override

@@ -63,7 +63,9 @@ public class Candidate extends Voter {
                 data.getLastLogIndex().get(),
                 data.getLastLogTerm().get()
         );
-        fsm.getServer().getNetwork().broadcast(serverId, requestVote);
+        for (String neighbor : fsm.getServer().getQuorum()) {
+            fsm.getServer().getNetwork().sendMsg(serverId, neighbor, requestVote);
+        }
         votedFor = serverId;
     }
 }
