@@ -1,12 +1,13 @@
 package com.tuannh.sraft.server;
 
+import com.tuannh.sraft.api.RaftClientInterface;
 import com.tuannh.sraft.commons.observer.Listener;
 import com.tuannh.sraft.commons.rand.Random;
-import com.tuannh.sraft.dto.cmd.ClientCommand;
-import com.tuannh.sraft.dto.cmd.ClientCommandVisitor;
 import com.tuannh.sraft.dto.rpc.*;
 import com.tuannh.sraft.fsm.RaftFsm;
 import com.tuannh.sraft.fsm.event.FsmEvent;
+import com.tuannh.sraft.fsm.state.FsmState;
+import com.tuannh.sraft.log.RaftLog;
 import com.tuannh.sraft.utility.network.Network;
 import com.tuannh.sraft.utility.timer.DefaultTimer;
 import com.tuannh.sraft.utility.timer.Timer;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @Log4j2
 @Getter
-public class RaftServer implements RpcVisitor, Listener<Long> {
+public class RaftServer implements RpcVisitor, RaftClientInterface, Listener<Long> {
     // server
     private final String id;
     private final int quorumSize;
@@ -90,6 +91,7 @@ public class RaftServer implements RpcVisitor, Listener<Long> {
                 network.sendMsg(id, message.getFrom(), new AppendEntriesResponse(
                         id,
                         currentTerm,
+                        0,
                         false
                 ));
             } else if (message instanceof RequestVote) {
@@ -102,6 +104,11 @@ public class RaftServer implements RpcVisitor, Listener<Long> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void postHandle(BaseRpc message) {
+        log.info("{} | data = {}", id + fsm.getState().getState(), data);
     }
 
     @Override
@@ -129,5 +136,37 @@ public class RaftServer implements RpcVisitor, Listener<Long> {
     @Override
     public void onEvent(Long event) {
         fsm.transition(FsmEvent.TIMEOUT);
+    }
+
+    // cli
+
+    @Override
+    public void deposit(long value) {
+        if (FsmState.LEADER.getValue().equals(fsm.state())) {
+            String cmd = "DEPOSIT " + value;
+            log.info("{} | ClientCommand received {}", id + fsm.getState().getState(), cmd);
+            data.getLogs().add(new RaftLog(cmd, data.getCurrentTerm().get()));
+            data.getCommitIndex().set(data.getLogs().size() - 1L);
+            data.getLastApplied().set(data.getLogs().size() - 1L);
+            data.getLastLogIndex().set(data.getLogs().size() - 1L);
+            if (data.getLastLogIndex().get() > -1) {
+                data.getLastLogTerm().set(data.getLogs().get((int) data.getLastLogIndex().get()).getTerm());
+            }
+        }
+    }
+
+    @Override
+    public void withdraw(long value) {
+        if (FsmState.LEADER.getValue().equals(fsm.state())) {
+            String cmd = "WITHDRAW " + value;
+            log.info("{} | ClientCommand received {}", id + fsm.getState().getState(), cmd);
+            data.getLogs().add(new RaftLog(cmd, data.getCurrentTerm().get()));
+            data.getCommitIndex().set(data.getLogs().size() - 1L);
+            data.getLastApplied().set(data.getLogs().size() - 1L);
+            data.getLastLogIndex().set(data.getLogs().size() - 1L);
+            if (data.getLastLogIndex().get() > -1) {
+                data.getLastLogTerm().set(data.getLogs().get((int) data.getLastLogIndex().get()).getTerm());
+            }
+        }
     }
 }

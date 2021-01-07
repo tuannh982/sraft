@@ -25,9 +25,9 @@ public final class RaftData {
     public RaftData() {
         currentTerm = new AtomicLong(0);
         logs = new LinkedList<>();
-        commitIndex = new AtomicLong(0);
-        lastApplied = new AtomicLong(0);
-        lastLogIndex = new AtomicLong(0);
+        commitIndex = new AtomicLong(-1);
+        lastApplied = new AtomicLong(-1);
+        lastLogIndex = new AtomicLong(-1);
         lastLogTerm = new AtomicLong(0);
     }
 }

@@ -26,7 +26,7 @@ public class Leader extends ServerState {
         sendHeartBeat(server.getId());
         for (String neighbor : server.getNeighbors()) {
             nextIndex.put(neighbor, new AtomicLong(data.getLastLogIndex().get() + 1));
-            matchIndex.put(neighbor, new AtomicLong(0));
+            matchIndex.put(neighbor, new AtomicLong(-1));
         }
     }
 
@@ -55,29 +55,44 @@ public class Leader extends ServerState {
 
     @Override
     public synchronized boolean handle(AppendEntriesResponse message) {
+        final String sender = message.getFrom();
         if (message.isSuccess()) {
-            nextIndex.get(message.getFrom()).incrementAndGet();
-            if (nextIndex.get(message.getFrom()).get() > data.getLastLogIndex().get()) {
-                nextIndex.get(message.getFrom()).set(data.getLastLogIndex().get());
+            matchIndex.get(sender).set(nextIndex.get(sender).get());
+            nextIndex.get(sender).addAndGet(message.getSize());
+            if (nextIndex.get(sender).get() > data.getLastLogIndex().get() + 1) {
+                nextIndex.get(sender).set(data.getLastLogIndex().get() + 1);
             }
-            return true;
-        } else {
+        }
+        // nelse
+        {
             final String serverId = server.getId();
-            nextIndex.get(message.getFrom()).decrementAndGet();
-            final long prevIndex = Math.max(0, nextIndex.get(message.getFrom()).get() - 1);
-            RaftLog prevLog = data.getLogs().get((int) prevIndex); // FIXME
-            RaftLog currentLog = data.getLogs().get((int) nextIndex.get(message.getFrom()).get()); // FIXME
-            AppendEntries msg = new AppendEntries(
-                    serverId,
-                    data.getCurrentTerm().get(),
-                    serverId,
-                    prevIndex,
-                    prevLog.getTerm(),
-                    new RaftLog[] {currentLog},
-                    data.getCommitIndex().get()
-            );
-            log.info("{} | server send heartbeat with data {}", server.getId() + state, msg);
-            server.getNetwork().sendMsg(serverId, message.getFrom(), msg);
+            if (data.getLastLogIndex().get() >= nextIndex.get(sender).get()) {
+                log.info("{} | append entries to {} (last_log_index = {} >= next_index = {})",
+                        server.getId() + state,
+                        sender,
+                        data.getLastLogIndex().get(),
+                        nextIndex.get(sender).get());
+                final long prevIndex = nextIndex.get(sender).get() - 1;
+                RaftLog currentLog;
+                long prevTerm = 0;
+                if (prevIndex < 0) {
+                    currentLog = data.getLogs().getLast();
+                } else {
+                    prevTerm = data.getLogs().get((int) prevIndex).getTerm();
+                    currentLog = data.getLogs().get((int) (prevIndex + 1)); // FIXME
+                }
+                AppendEntries msg = new AppendEntries(
+                        serverId,
+                        data.getCurrentTerm().get(),
+                        serverId,
+                        prevIndex,
+                        prevTerm,
+                        new RaftLog[] {currentLog},
+                        data.getCommitIndex().get()
+                );
+                log.info("{} | server send heartbeat to {} with data {}", server.getId() + state, sender, msg);
+                server.getNetwork().sendMsg(serverId, sender, msg);
+            }
             return true;
         }
     }
