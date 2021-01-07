@@ -15,14 +15,14 @@ run `main` in class `com.tuannh.sraft.Test`
 # Features
 
 - [x] leader election
-- [x] logs replicated
+- [x] logs replication
 - [ ] membership change
 - [ ] log compaction
 
 **Note #1:** this project only for educational purpose, those features will not be optimized for production
 
 **Note #2:** `membership change` and `log compaction` are not implemented since we only need `leader election`
-and `logs replicated`
+and `logs replication`
 
 # TODOs
 
