@@ -31,6 +31,7 @@ and `logs replication`
     - [x] transport (send, recv, broadcast)
     - [x] message encapsulation
     - [x] async IO (simple message queue)
+    - [x] network jamming
     - [x] test
 - [x] timer
     - [x] scheduled task

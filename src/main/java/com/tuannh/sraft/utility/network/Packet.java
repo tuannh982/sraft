@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 @ToString
 @Getter
 @AllArgsConstructor

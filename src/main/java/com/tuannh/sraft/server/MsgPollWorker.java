@@ -3,12 +3,9 @@ package com.tuannh.sraft.server;
 import com.tuannh.sraft.dto.rpc.BaseRpc;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.concurrent.TimeUnit;
-
 @Log4j2
 public class MsgPollWorker implements Runnable {
     private static final long IO_LOOP_WAIT = 20;
-    private static final long IO_TIMEOUT = 20;
     private final Object ioLock = new Object[0];
     private volatile boolean stop = false;
 
@@ -32,7 +29,7 @@ public class MsgPollWorker implements Runnable {
                 synchronized (ioLock) {
                     ioLock.wait(IO_LOOP_WAIT);
                 }
-                BaseRpc message = server.getNetwork().pollMsg(server.getId(), IO_TIMEOUT, TimeUnit.MILLISECONDS);
+                BaseRpc message = server.getNetwork().pollMsg(server.getId());
                 if (message != null) {
                     server.visit(message);
                 }

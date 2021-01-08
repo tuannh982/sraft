@@ -147,7 +147,7 @@ public class RaftServer implements RpcVisitor, RaftClientInterface, Listener<Lon
             log.info("{} | ClientCommand received {}", id + fsm.getState().getState(), cmd);
             data.getLogs().add(new RaftLog(cmd, data.getCurrentTerm().get()));
             data.getCommitIndex().set(data.getLogs().size() - 1L);
-            data.getLastApplied().set(data.getLogs().size() - 1L);
+//            data.getLastApplied().set(data.getLogs().size() - 1L);
             data.getLastLogIndex().set(data.getLogs().size() - 1L);
             if (data.getLastLogIndex().get() > -1) {
                 data.getLastLogTerm().set(data.getLogs().get((int) data.getLastLogIndex().get()).getTerm());
@@ -162,7 +162,7 @@ public class RaftServer implements RpcVisitor, RaftClientInterface, Listener<Lon
             log.info("{} | ClientCommand received {}", id + fsm.getState().getState(), cmd);
             data.getLogs().add(new RaftLog(cmd, data.getCurrentTerm().get()));
             data.getCommitIndex().set(data.getLogs().size() - 1L);
-            data.getLastApplied().set(data.getLogs().size() - 1L);
+//            data.getLastApplied().set(data.getLogs().size() - 1L);
             data.getLastLogIndex().set(data.getLogs().size() - 1L);
             if (data.getLastLogIndex().get() > -1) {
                 data.getLastLogTerm().set(data.getLogs().get((int) data.getLastLogIndex().get()).getTerm());

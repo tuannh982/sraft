@@ -65,6 +65,7 @@ public class Leader extends ServerState {
             if (nextIndex.get(sender).get() > data.getLastLogIndex().get() + 1) {
                 nextIndex.get(sender).set(data.getLastLogIndex().get() + 1);
             }
+            data.getLastApplied().set(nextIndex.get(sender).get() - 1);
         }
         // nelse
         {
