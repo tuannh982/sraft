@@ -10,7 +10,7 @@ demonstration http://thesecretlivesofdata.com/raft/
 
 # Quickstarts
 
-run `main` in class `com.tuannh.sraft.Test`
+run `main` in class `Test`
 
 # Features
 
